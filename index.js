@@ -1,7 +1,16 @@
+require('dotenv').config();
 const express = require('express');
+const cors = require("cors");
 const pool = require('./db');
+// const auth = require('./routes/auth');
+
 const app = express();
-const port = 5000;
+const port = 3002;
+
+app.use(express.json());
+app.use(cors());
+// app.use("api/v1/auth",auth);
+
 
 // here we expose an endpoint "persons"
 app.get('/persons', async (req, res) => {
@@ -24,25 +33,8 @@ app.get('/persons', async (req, res) => {
         if (conn) return conn.release();
     }
 });
-// app.post('/persons', async (req, res) => {
-//     let conn;
-//     try {
-//         // here we make a connection to MariaDB
-//         conn = await pool.getConnection();
+app.get("/",async(req,res)=>{
+    res.status(200).send("sucess")
 
-//         // create a new query to fetch all records from the table
-//         var query = "select * from members";
-
-//         // we run the query and set the result to a new variable
-//         var rows = await conn.query(query);
-
-//         // return the results
-//         res.send(rows);
-//     } catch (err) {
-//         throw err;
-//     } finally {
-//         if (conn) return conn.release();
-//     }
-// });
-
+})
 app.listen(port, () => console.log(`Listening on port ${port}`));

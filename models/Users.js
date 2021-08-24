@@ -1,39 +1,82 @@
-const config = require("config");
-const jwt = require("jsonwebtoken");
 const Joi = require("joi");
+const pool = require("../db")
+const express = require("express");
 
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 255,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 1024,
-  },
-  
-});
 
-userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, config.get("jwtPrivateKey"));
-  return token;
-};
 
-const User = mongoose.model("User", userSchema);
 
-function validateUser(user) {
-  const schema = Joi.object({
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required(),
-  });
 
-  return schema.validate(user);
+exports.register = async function register(email,password,name,surname){
+    con = await pool.getConnection();
+    const [rows] = await con.query(
+        "SELECT * FROM users WHERE email = ?",
+        [email]
+    );
+    console.log("rows =",email)
+    if (rows) {
+        throw Error("This email already in use.");
+    }
+
+    const row = await con.query(
+        "INSERT INTO users (name,surname,email,password) VALUES(?,?,?,?)",
+        [name,surname,email,password]
+    );
+    console.log(row);
+    if (row.affectedRows !== 1) {
+        throw Error("Your registration has failed.");
+    }
+    const [regis] = await con.query(
+        "SELECT * FROM users WHERE email = ?",
+        [email]
+    );
+    return regis
+    
 }
 
-exports.User = User;
-exports.validate = validateUser;
+exports.getAllUsers = async ()=>{
+    con = await pool.getConnection();
+    const rows = await con.query(
+        "select * from users"
+    );
+    return rows
+    
+}
+exports.deleteUsers = async (id)=>{
+    con = await pool.getConnection();
+    const row = await con.query(
+        "delete from users where id=? LIMIT 1"
+        ,[id]
+    );
+    if(row.affectedRows !==1){
+        throw Error("Failed to Delete");
+    } 
+    return row
+
+}
+exports.updateUsers = async(id,data)=>{
+    con = await pool.getConnection();
+    const row = await con.query("UPDATE users SET email = ? , password = ? , name = ?, surname = ?   WHERE id = ?",[data.email,data.password,data.name,data.surname,id]);
+    console.log(row);
+    if(row.affectedRows !==1){
+        throw Error("Failed to update");
+    } 
+    const updatedRow = await con.query("select * from users where id=?",[id]);
+    return updatedRow
+
+}
+
+
+
+
+
+
+// CREATE TABLE users (
+//     id int(10) unsigned NOT NULL AUTO_INCREMENT,
+//     name varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+//     surname varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+//     email varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+//     password varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+
+//     PRIMARY KEY (id),
+//     UNIQUE KEY email (email)
+//    ) ENGINE=InnoDB COLLATE=utf8mb4_unicode_ci;

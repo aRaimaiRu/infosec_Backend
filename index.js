@@ -2,14 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const cors = require("cors");
 const pool = require('./db');
-// const auth = require('./routes/auth');
+const user = require('./routes/auth');
 
 const app = express();
 const port = 3002;
 
 app.use(express.json());
 app.use(cors());
-// app.use("api/v1/auth",auth);
+app.use("/api/user",user);
 
 
 // here we expose an endpoint "persons"

@@ -73,12 +73,14 @@ function updateSchema(req, res, next) {
 }
 
 function update(req, res, next) {
+    if(req.params.id != req.user.sub) return res.json({message:'Unauthorized Failed to Update'})
     userService.update(req.params.id, req.body)
         .then(user => res.json(user))
         .catch(next);
 }
 
 function _delete(req, res, next) {
+    if(req.params.id != req.user.sub) return res.json({message:'Unauthorized Failed to Delete'})
     userService.delete(req.params.id)
         .then(() => res.json({ message: 'User deleted successfully' }))
         .catch(next);

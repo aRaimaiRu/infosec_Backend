@@ -1,72 +1,32 @@
-const Joi = require("joi");
-const pool = require("../db")
-const express = require("express");
+const { DataTypes } = require('sequelize');
 
+module.exports = model;
 
+function model(sequelize) {
+    const attributes = {
+        firstName: { type: DataTypes.STRING, allowNull: false },
+        lastName: { type: DataTypes.STRING, allowNull: false },
+        username: { type: DataTypes.STRING, allowNull: false },
+        hash: { type: DataTypes.STRING, allowNull: false }
+    };
 
+    const options = {
+        defaultScope: {
+            // exclude hash by default
+            attributes: { exclude: ['hash'] }
+        },
+        scopes: {
+            // include hash with this scope
+            withHash: { attributes: {}, }
+        }
+    };
 
-
-exports.register = async function register(email,password,name,surname){
-    con = await pool.getConnection();
-    const [rows] = await con.query(
-        "SELECT * FROM users WHERE email = ?",
-        [email]
-    );
-    console.log("rows =",email)
-    if (rows) {
-        throw Error("This email already in use.");
-    }
-
-    const row = await con.query(
-        "INSERT INTO users (name,surname,email,password) VALUES(?,?,?,?)",
-        [name,surname,email,password]
-    );
-    console.log(row);
-    if (row.affectedRows !== 1) {
-        throw Error("Your registration has failed.");
-    }
-    const [regis] = await con.query(
-        "SELECT * FROM users WHERE email = ?",
-        [email]
-    );
-    return regis
-    
-}
-
-exports.getAllUsers = async ()=>{
-    con = await pool.getConnection();
-    const rows = await con.query(
-        "select * from users"
-    );
-    return rows
-    
-}
-exports.deleteUsers = async (id)=>{
-    con = await pool.getConnection();
-    const row = await con.query(
-        "delete from users where id=? LIMIT 1"
-        ,[id]
-    );
-    if(row.affectedRows !==1){
-        throw Error("Failed to Delete");
-    } 
-    return row
-
-}
-exports.updateUsers = async(id,data)=>{
-    con = await pool.getConnection();
-    const row = await con.query("UPDATE users SET email = ? , password = ? , name = ?, surname = ?   WHERE id = ?",[data.email,data.password,data.name,data.surname,id]);
-    console.log(row);
-    if(row.affectedRows !==1){
-        throw Error("Failed to update");
-    } 
-    const updatedRow = await con.query("select * from users where id=?",[id]);
-    return updatedRow
-
+    return sequelize.define('User', attributes, options);
 }
 
 
-
+// The defaultScope configures the model to exclude the password hash from query results by default.
+//  The withHash scope can be used to query users and include the password hash field in results.
 
 
 

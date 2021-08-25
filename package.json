@@ -14,9 +14,13 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-jwt": "^6.1.0",
     "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "mariadb": "^2.5.4",
-    "nodemon": "^2.0.12"
+    "mysql2": "^2.3.0",
+    "nodemon": "^2.0.12",
+    "sequelize": "^6.6.5"
   }
 }

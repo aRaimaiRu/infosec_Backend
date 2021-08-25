@@ -1,23 +1,56 @@
 // here we import the mariadb
-const mariadb = require('mariadb');
-require('dotenv').config();
-// here we create a new connection pool
-const pool = mariadb.createPool({
-  host: process.env.HOST, 
-  user: process.env.USER, 
-  password: process.env.PASSWORD,
-  database: process.env.DB
+
+const mysql = require('mariadb');
+const { Sequelize } = require('sequelize');
+
+
+
+const host = process.env.HOST;
+const user = process.env.USER;
+const password = process.env.PASSWORD;
+const database = process.env.DB;
+
+const pool = mysql.createPool({
+  host,
+  user ,
+  password,
+  database
 });
 
-// here we are exposing the ability to creating new connections
-module.exports={
-    getConnection: function(){
-      return new Promise(function(resolve,reject){
-        pool.getConnection().then(function(connection){
-          resolve(connection);
-        }).catch(function(error){
-          reject(error);
-        });
-      });
-    }
-  }
+module.exports = db = {};
+
+function startcon(){
+  return new Promise(function(resolve,reject){
+    pool.getConnection().then(function(connection){
+      resolve(connection);
+    }).catch(function(error){
+      reject(error);
+    });
+  });
+}
+
+
+
+
+initialize();
+
+
+
+
+async function initialize() {
+    // create db if it doesn't already exist
+    const connection = await startcon();
+    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.database}\`;`);
+
+    // connect to db
+    const sequelize = new Sequelize(database, user, password, { dialect: 'mysql' });
+
+    // init models and add them to the exported db object
+    db.User = require('./models/Users')(sequelize);
+
+    // sync all models with database
+    await sequelize.sync();
+}
+
+
+

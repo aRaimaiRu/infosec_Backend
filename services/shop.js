@@ -4,7 +4,10 @@ const db = require('../db');
 
 module.exports = {
     create,
-    contactShop
+    contactShop,
+    getShop,
+    getOwnShop,
+    getShopisContact
   
 };
 const secret = process.env.SECRET;
@@ -28,6 +31,37 @@ async function contactShop({ShopId,UserId}) {
 
     await db.Contact.create({ShopId,UserId});
     return "successful contact shop"
+
+}
+
+async function getShop(shopId) {
+    let shop = await db.Shops.findByPk(shopId)
+    return shop.toJSON()
+
+
+}
+
+async function getOwnShop(ownerId){
+
+    let shop = await db.Shops.findOne({where:{ownerId}})
+
+    let contact = await db.Contact.findAll({where:{shopId:shop.id}})
+    
+    return {...shop.toJSON(),contact}
+    
+
+}
+async function getShopisContact({UserId,ShopId}){
+    console.log("in get",{UserId,ShopId});
+    let shop = await db.Shops.findByPk(ShopId)
+    let isAlreadyContact;
+    if(!shop) throw "shop not found";
+    let contact = await db.Contact.findOne({where:{UserId,ShopId}})
+    if(contact){
+        isAlreadyContact = 1;
+    }
+
+    return {...shop.toJSON(),isAlreadyContact}
 
 }
 

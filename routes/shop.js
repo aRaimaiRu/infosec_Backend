@@ -23,7 +23,6 @@ function getShop(req,res,next){
 
 }
 function getShopisContact(req,res,next){
-    console.log("input =",{ShopId:parseInt(req.params.shopid),UserId:req.user.id})
     shopService.getShopisContact({ShopId:req.params.shopid,UserId:req.user.id})
     .then(shop=>res.json({...shop}))
     .catch(next)

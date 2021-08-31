@@ -24,7 +24,7 @@ async function create(params) {
 
 async function contactShop({ShopId,UserId}) {
     // validate
-    console.log({ShopId,UserId});
+
     if (await db.Contact.findOne({ where: { ShopId,UserId } })) {
         throw 'User ID "' + UserId + '" is already create a shop ShopId';
     }
@@ -52,7 +52,7 @@ async function getOwnShop(ownerId){
 
 }
 async function getShopisContact({UserId,ShopId}){
-    console.log("in get",{UserId,ShopId});
+
     let shop = await db.Shops.findByPk(ShopId)
     let isAlreadyContact;
     if(!shop) throw "shop not found";

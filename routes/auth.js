@@ -75,7 +75,7 @@ function registerShop(req, res, next) {
         ownerId:req.user.id,
         status:"pending"
     }
-    console.log(shop,req.user);
+
     shopService.create(shop)
         .then(() => res.json({ message: 'Registration successful' }))
         .catch(next);

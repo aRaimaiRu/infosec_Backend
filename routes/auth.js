@@ -4,10 +4,12 @@ const Joi = require('joi');
 const validateRequest = require('../middlewares/validate-request');
 const authorize = require('../middlewares/auth')
 const userService = require('../services/user');
+const shopService = require('../services/shop');
 
 // routes
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
+router.post('/register/shop', [authorize(),authorizeForRoleId(1),registerShopSchema], registerShop);//FE ->register as User -> login ->register as shop
 router.get('/', authorize(), getAll);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
@@ -22,6 +24,7 @@ function authenticateSchema(req, res, next) {
         password: Joi.string().required()
     });
     validateRequest(req, next, schema);
+
 }
 
 function authenticate(req, res, next) {
@@ -39,9 +42,41 @@ function registerSchema(req, res, next) {
     });
     validateRequest(req, next, schema);
 }
+function registerShopSchema(req, res, next) {
+    const schema = Joi.object({
+        name: Joi.string().required(),
+        address: Joi.string().required(),
+    });
+    validateRequest(req, next, schema);
+}
+function authorizeForRoleId(Role){
+    return (req,res,next)=>{
+        if (req.user.RoleId != Role){
+            return res.json({message:'Permission mismatch'})
+        }
+        next()
+    
+    }
+
+}
 
 function register(req, res, next) {
-    userService.create(req.body)
+    userService.create({...req.body,RoleId:1})
+        .then(() => res.json({ message: 'Registration Shop successful' }))
+        .catch(next);
+}
+
+
+
+function registerShop(req, res, next) {
+    let shop = {
+        name:req.body.name,
+        address:req.body.address,
+        ownerId:req.user.id,
+        status:"pending"
+    }
+    console.log(shop,req.user);
+    shopService.create(shop)
         .then(() => res.json({ message: 'Registration successful' }))
         .catch(next);
 }

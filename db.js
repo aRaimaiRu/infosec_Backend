@@ -43,13 +43,27 @@ async function initialize() {
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.database}\`;`);
 
     // connect to db
-    const sequelize = new Sequelize(database, user, password, { dialect: 'mysql' });
+    const sequelize = new Sequelize(database, user, password, { dialect: 'mariadb' });
 
     // init models and add them to the exported db object
-    db.User = require('./models/Users')(sequelize);
+    db.User = require('./models/Users')(sequelize);//return sequelize.models.User
+    db.Shops = require('./models/Shops')(sequelize);
+    db.Role = require('./models/Roles')(sequelize);
+    //User and Role relation
+    db.Role.hasMany(db.User);
+    //customers and shop contact
+    db.Contact = sequelize.define('contact');
+    db.Shops.belongsToMany(db.User,{through:db.Contact});
+    //user own only one shop
+    db.User.hasOne(db.Shops,{foreignKey:"ownerId"});
+
+    //create Role
+    // await db.Role.create({roleName:"Customer"});
+    // await db.Role.create({roleName:"ShopOwner"});
+    // await db.Role.create({roleName:"Admin"});
 
     // sync all models with database
-    await sequelize.sync();
+    await sequelize.sync({alter:true});
 }
 
 

@@ -14,8 +14,11 @@ const secret = process.env.SECRET
 async function authenticate({ username, password }) {
     const user = await db.User.scope('withHash').findOne({ where: { username } });
 
-    if (!user || !(await bcrypt.compare(password, user.hash)))
+    if (user.password !== password){
         throw 'Username or password is incorrect';
+    }
+    // if (!user || !(await bcrypt.compare(password, user.hash)))
+    //     throw 'Username or password is incorrect';
 
     // authentication successful
     const token = jwt.sign({ sub: user.id }, secret, { expiresIn: '7d' });
@@ -36,11 +39,10 @@ async function create(params) {
         throw 'Username "' + params.username + '" is already taken';
     }
 
-    // hash password
-    if (params.password) {
-        params.hash = await bcrypt.hash(params.password, 10);
-    }
-
+    // // hash password
+    // if (params.password) {
+    //     params.hash = await bcrypt.hash(params.password, 10);
+    // }
     // save user
     await db.User.create(params);
 }
@@ -55,9 +57,9 @@ async function update(id, params) {
     }
 
     // hash password if it was entered
-    if (params.password) {
-        params.hash = await bcrypt.hash(params.password, 10);
-    }
+    // if (params.password) {
+    //     params.hash = await bcrypt.hash(params.password, 10);
+    // }
 
     // copy params to user and save
     Object.assign(user, params);

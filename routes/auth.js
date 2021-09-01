@@ -69,14 +69,14 @@ function register(req, res, next) {
 
 
 
-function registerShop(req, res, next) {
+async function registerShop(req, res, next) {
     let shop = {
         name:req.body.name,
         address:req.body.address,
         ownerId:req.user.id,
         status:"pending"
     }
-
+    await userService.ChangeRole({userId:req.user.id,roleId:2});
     shopService.create(shop)
         .then(() => res.json({ message: 'Registration successful' }))
         .catch(next);

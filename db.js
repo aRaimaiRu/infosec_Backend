@@ -67,7 +67,7 @@ async function initialize() {
     //   firstName: "Kittipat",
     //   lastName: "Poosrimoung",
     //   username: "s6102041620020@email.kmutnb.ac.th",
-    //   password: "$2a$10$9w7HRjqCZ/gd1U7BPVOEE.gDoL7qaXubZ714JrESrYbITltVfalFq",
+    //   password: "25f9e794323b453885f5181f1b624d0b",
     //   RoleId: 3
     // })
     // sync all models with database

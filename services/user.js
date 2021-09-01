@@ -17,8 +17,8 @@ async function authenticate({ username, password }) {
     if (user.password !== password){
         throw 'Username or password is incorrect';
     }
-    // if (!user || !(await bcrypt.compare(password, user.hash)))
-    //     throw 'Username or password is incorrect';
+    if (!user || !(await bcrypt.compare(password, user.password)))
+        throw 'Username or password is incorrect';
 
     // authentication successful
     const token = jwt.sign({ sub: user.id }, secret, { expiresIn: '7d' });

@@ -8,7 +8,8 @@ module.exports = {
     getById,
     create,
     update,
-    delete: _delete
+    delete: _delete,
+    ChangeRole
 };
 const secret = process.env.SECRET
 async function authenticate({ username, password }) {
@@ -84,4 +85,10 @@ async function getUser(id) {
 function omitHash(user) {
     const { hash, ...userWithoutHash } = user;
     return userWithoutHash;
+}
+async function ChangeRole({userId,roleId}) {
+    const user = await db.User.findByPk(userId);
+    user.RoleId = roleId;
+    user.save();
+    return "sucessful change user Role"
 }

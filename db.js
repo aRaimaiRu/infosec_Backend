@@ -62,6 +62,14 @@ async function initialize() {
     // await db.Role.create({roleName:"ShopOwner"});
     // await db.Role.create({roleName:"Admin"});
 
+    //create Admin
+    // db.User.create({
+    //   firstName: "Kittipat",
+    //   lastName: "Poosrimoung",
+    //   username: "s6102041620020@email.kmutnb.ac.th",
+    //   password: "$2a$10$9w7HRjqCZ/gd1U7BPVOEE.gDoL7qaXubZ714JrESrYbITltVfalFq",
+    //   RoleId: 3
+    // })
     // sync all models with database
     await sequelize.sync({alter:true});
 }

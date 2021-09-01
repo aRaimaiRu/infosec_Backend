@@ -7,7 +7,8 @@ module.exports = {
     contactShop,
     getShop,
     getOwnShop,
-    getShopisContact
+    getShopisContact,
+    changeShopStatus
   
 };
 const secret = process.env.SECRET;
@@ -62,6 +63,18 @@ async function getShopisContact({UserId,ShopId}){
     }
 
     return {...shop.toJSON(),isAlreadyContact}
+
+}
+
+async function changeShopStatus({shopId,status}){
+    let shop = await db.Shops.findByPk(shopId);
+    if(!shop) return "can't find specifify shop";
+    shop.status = status
+
+    await shop.save();
+    console.log("checkkkk");
+    return `successful change status ${shop.name} to ${status} `
+
 
 }
 

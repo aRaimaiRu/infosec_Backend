@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
 const validateRequest = require('../middlewares/validate-request');
+const authorizeForRoleId = require('../middlewares/authorizeForId');
 const authorize = require('../middlewares/auth')
 const userService = require('../services/user');
 const shopService = require('../services/shop');
@@ -49,16 +50,16 @@ function registerShopSchema(req, res, next) {
     });
     validateRequest(req, next, schema);
 }
-function authorizeForRoleId(Role){
-    return (req,res,next)=>{
-        if (req.user.RoleId != Role){
-            return res.json({message:'Permission mismatch'})
-        }
-        next()
+// function authorizeForRoleId(Role){
+//     return (req,res,next)=>{
+//         if (req.user.RoleId != Role){
+//             return res.json({message:'Permission mismatch'})
+//         }
+//         next()
     
-    }
+//     }
 
-}
+// }
 
 function register(req, res, next) {
     userService.create({...req.body,RoleId:1})

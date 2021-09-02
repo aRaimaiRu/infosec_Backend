@@ -63,13 +63,17 @@ async function initialize() {
     // await db.Role.create({roleName:"Admin"});
 
     //create Admin
-    // db.User.create({
-    //   firstName: "Kittipat",
-    //   lastName: "Poosrimoung",
-    //   username: "s6102041620020@email.kmutnb.ac.th",
-    //   password: "25f9e794323b453885f5181f1b624d0b",
-    //   RoleId: 3
-    // })
+    let admin = await db.User.findOne({where:{username:process.env.ADMINUSERNAME}})
+    if(!admin){
+      db.User.create({
+        firstName: process.env.ADMINFIRSTNAME,
+        lastName: process.env.ADMINLASTNAME,
+        username: process.env.ADMINUSERNAME,
+        password: process.env.ADMINPASSWORD,
+        RoleId: process.env.ADMINROLEID
+      })
+    }
+
     // sync all models with database
     await sequelize.sync({alter:true});
 }

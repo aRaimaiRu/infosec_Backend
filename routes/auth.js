@@ -2,15 +2,14 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
 const validateRequest = require('../middlewares/validate-request');
-const authorizeForRoleId = require('../middlewares/authorizeForId');
 const authorize = require('../middlewares/auth')
 const userService = require('../services/user');
 const shopService = require('../services/shop');
-
+const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
 // routes
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
-router.post('/register/shop', [authorize(),authorizeForRoleId(1),registerShopSchema], registerShop);//FE ->register as User -> login ->register as shop
+router.post('/register/shop', [authorize(),CheckAuthorizeWithTable("shops",1,1),registerShopSchema], registerShop);//FE ->register as User -> login ->register as shop
 router.get('/', authorize(), getAll);
 router.get('/current', authorize(), getCurrent);
 router.get('/:id', authorize(), getById);
@@ -50,16 +49,7 @@ function registerShopSchema(req, res, next) {
     });
     validateRequest(req, next, schema);
 }
-// function authorizeForRoleId(Role){
-//     return (req,res,next)=>{
-//         if (req.user.RoleId != Role){
-//             return res.json({message:'Permission mismatch'})
-//         }
-//         next()
-    
-//     }
 
-// }
 
 function register(req, res, next) {
     userService.create({...req.body,RoleId:1})

@@ -5,10 +5,9 @@ const validateRequest = require('../middlewares/validate-request');
 const authorize = require('../middlewares/auth')
 const userService = require('../services/user');
 const shopService = require('../services/shop');
-const authorizeForRoleId = require('../middlewares/authorizeForId');
-
+const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
 // routes
-router.post('/approve',[authorize(),authorizeForRoleId(3)],changeShopStatus)
+router.post('/approve',[authorize(),CheckAuthorizeWithTable("shops",2,2)],changeShopStatus)
 router.get('/contact/:shopid', authorize(),getShopisContact);
 router.post('/contact/:shopid', authorize(),contactShop);
 router.get('/OwnShop',authorize(),getOwnShop);

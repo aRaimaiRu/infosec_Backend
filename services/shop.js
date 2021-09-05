@@ -72,7 +72,6 @@ async function changeShopStatus({shopId,status}){
     shop.status = status
 
     await shop.save();
-    console.log("checkkkk");
     return `successful change status ${shop.name} to ${status} `
 
 

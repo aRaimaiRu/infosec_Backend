@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const db = require('../db');
+const _ = require('lodash')
 
 module.exports = {
     authenticate,
@@ -13,7 +14,7 @@ module.exports = {
 };
 const secret = process.env.SECRET
 async function authenticate({ username, password }) {
-    const user = await db.User.scope('withHash').findOne({ where: { username } });
+    const user = await db.User.scope('withHash').findOne({ where: { username },include:[db.Role] });
 
     if (user.password !== password){
         throw 'Username or password is incorrect';
@@ -22,8 +23,8 @@ async function authenticate({ username, password }) {
     //     throw 'Username or password is incorrect';
 
     // authentication successful
-    const token = jwt.sign({ sub: user.id }, secret, { expiresIn: '10m' });
-    return { ...omitHash(user.get()), token };
+    const token = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '10m' });
+    return { ...omitHash(user.get()),Role:user.Role.get().roleName, token };
 }
 
 async function getAll() {
@@ -83,7 +84,7 @@ async function getUser(id) {
 }
 
 function omitHash(user) {
-    const { hash, ...userWithoutHash } = user;
+    const { password, ...userWithoutHash } = user;
     return userWithoutHash;
 }
 async function ChangeRole({userId,roleId}) {

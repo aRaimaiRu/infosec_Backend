@@ -3,8 +3,8 @@
 const { includes } = require('lodash');
 const mysql = require('mariadb');
 const { Sequelize } = require('sequelize');
-
-
+const bcrypt = require('bcryptjs');
+const sha256 = require('sha256');
 const host = process.env.HOST;
 const user = process.env.USER;
 const password = process.env.PASSWORD;
@@ -80,14 +80,18 @@ async function initialize() {
 
     //create Admin
     let admin = await db.User.findOne({where:{username:process.env.ADMINUSERNAME}})
+    
     if(!admin){
-      db.User.create({
-        firstName: process.env.ADMINFIRSTNAME,
-        lastName: process.env.ADMINLASTNAME,
-        username: process.env.ADMINUSERNAME,
-        password: process.env.ADMINPASSWORD,
-        RoleId: process.env.ADMINROLEID
-      })
+      bcrypt.hash(process.env.ADMINPASSWORD, 10, function(err, hash) {
+        db.User.create({
+          firstName: process.env.ADMINFIRSTNAME,
+          lastName: process.env.ADMINLASTNAME,
+          username: process.env.ADMINUSERNAME,
+          password: hash,
+          RoleId: process.env.ADMINROLEID
+        })
+    });
+
     }
 
 

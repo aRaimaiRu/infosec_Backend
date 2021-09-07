@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const db = require('../db');
 const _ = require('lodash')
+
 
 module.exports = {
     authenticate,
@@ -15,12 +16,12 @@ module.exports = {
 const secret = process.env.SECRET
 async function authenticate({ username, password }) {
     const user = await db.User.scope('withHash').findOne({ where: { username },include:[db.Role] });
-
-    if (user.password !== password){
-        throw 'Username or password is incorrect';
-    }
-    // if (!user || !(await bcrypt.compare(password, user.password)))
+    // if (user.password !== password){
     //     throw 'Username or password is incorrect';
+    // }
+
+    if (!user || !(bcrypt.compareSync(password, user.password)))
+        throw 'Username or password is incorrect';
 
     // authentication successful
     const token = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '10m' });
@@ -41,10 +42,10 @@ async function create(params) {
         throw 'Username "' + params.username + '" is already taken';
     }
 
-    // // hash password
-    // if (params.password) {
-    //     params.hash = await bcrypt.hash(params.password, 10);
-    // }
+    // hash password
+    if (params.password) {
+        params.password = bcrypt.hashSync(params.password, 10);
+    }
     // save user
     await db.User.create(params);
 }

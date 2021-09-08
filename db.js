@@ -61,21 +61,21 @@ async function initialize() {
     // sync all models with database
     await sequelize.sync({alter:true});
     //create Role
-    // await db.Role.create({roleName:"Customer"});
-    // await db.Role.create({roleName:"ShopOwner"});
-    // await db.Role.create({roleName:"Admin"});
+    await db.Role.create({roleName:"Customer"});
+    await db.Role.create({roleName:"ShopOwner"});
+    await db.Role.create({roleName:"Admin"});
 
     //update Role
-    // let updateRoleAdmin = {id:3,users:"0222",shops:"0222",contacts:"0222",roles:"2222"}
-    // try{
-    //   await db.Role.update(updateRoleAdmin, {
-    //     where: {
-    //       id: updateRoleAdmin.id
-    //     }
-    //   });
-    // }catch(e){
-    //   console.log("e =",e)
-    // }
+    let updateRoleAdmin = {id:3,users:"0222",shops:"0222",contacts:"0222",roles:"2222"}
+    try{
+      await db.Role.update(updateRoleAdmin, {
+        where: {
+          id: updateRoleAdmin.id
+        }
+      });
+    }catch(e){
+      console.log("e =",e)
+    }
     
 
     //create Admin

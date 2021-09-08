@@ -66,11 +66,23 @@ async function initialize() {
     await db.Role.create({roleName:"Admin"});
 
     //update Role
+    let customerRole = {id:1,users:"1111",shops:"1211",contacts:"1111",roles:"0100"}
+    let shopOwner = {id:2,users:"1111",shops:"1211",contacts:"1111",roles:"0100"}
     let updateRoleAdmin = {id:3,users:"0222",shops:"0222",contacts:"0222",roles:"2222"}
     try{
       await db.Role.update(updateRoleAdmin, {
         where: {
           id: updateRoleAdmin.id
+        }
+      });
+      await db.Role.update(shopOwner, {
+        where: {
+          id: shopOwner.id
+        }
+      });
+      await db.Role.update(customerRole, {
+        where: {
+          id: customerRole.id
         }
       });
     }catch(e){

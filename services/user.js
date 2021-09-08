@@ -39,7 +39,6 @@ async function refreshJWT(rftoken){
     // console.log("Refresh JWT = ",user.get())
     return { ...omitHash(user.get()),Role:user.Role.get().roleName, token,refreshtoken };
     }catch(e){
-        console.log("error",e)
         throw e
     }
     

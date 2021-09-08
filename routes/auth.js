@@ -146,7 +146,6 @@ function _delete(req, res, next) {
 
 function logout(req,res,next){
     try{
-        console.log("LOGOUTTTTTTTTTT")
         res.clearCookie('refreshToken');
         res.json({message:"logout success"})
 

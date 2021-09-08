@@ -9,14 +9,18 @@ const { route } = require('./auth');
 
 //operation CRUD 1234
 // routes
-// router.get('/')
+router.get('/',[authorize(),CheckAuthorizeWithTable("roles",2,1)],allRolePermission)
 // router.post('/create')
 router.put('/update',[authorize(),CheckAuthorizeWithTable("roles",2,2)],updateRole)//middleware check user permission need to be Admin
 // CheckAuthorizeWithTable(tablename,authorizationlevel,operation)
 // router.delete('/delete')
 
 
-
+function allRolePermission(req,res,next){
+    rolesSrvice.retrieveAllRole()
+    .then(data=>res.json(data))
+    .catch(e=>next(e))
+}
 
 function updateRole(req,res,next){
     rolesSrvice.updateRole(req.body)

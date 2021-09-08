@@ -9,7 +9,7 @@ function CheckAuthorizeWithTable(tablename,authorizationlevel,operation){//curre
             id:req.user.RoleId
         }})
         if(!(permission[tablename][operation] >= authorizationlevel)){
-            return res.json({message:'Permission mismatch'})
+            return res.status(401).json({message:'Permission mismatch'})
         }
         
 

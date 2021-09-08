@@ -57,34 +57,35 @@ async function initialize() {
     db.Shops.belongsToMany(db.User,{through:db.Contact});
     //user own only one shop
     db.User.hasOne(db.Shops,{foreignKey:"ownerId"});
-
+    try{
     // sync all models with database
     await sequelize.sync({alter:true});
     //create Role
-    await db.Role.create({roleName:"Customer"});
-    await db.Role.create({roleName:"ShopOwner"});
-    await db.Role.create({roleName:"Admin"});
-
+    if(!(await db.Role.findOne({where:{roleName:"Customer"}}))){
+    await db.Role.create({roleName:"Customer",users:"1111",shops:"1211",contacts:"1111",roles:"0100"});
+    await db.Role.create({roleName:"ShopOwner",users:"1111",shops:"1211",contacts:"1111",roles:"0100"});
+    await db.Role.create({roleName:"Admin",users:"0222",shops:"0222",contacts:"0222",roles:"2222"});
+    }
     //update Role
-    let customerRole = {id:1,users:"1111",shops:"1211",contacts:"1111",roles:"0100"}
-    let shopOwner = {id:2,users:"1111",shops:"1211",contacts:"1111",roles:"0100"}
-    let updateRoleAdmin = {id:3,users:"0222",shops:"0222",contacts:"0222",roles:"2222"}
-    try{
-      await db.Role.update(updateRoleAdmin, {
-        where: {
-          id: updateRoleAdmin.id
-        }
-      });
-      await db.Role.update(shopOwner, {
-        where: {
-          id: shopOwner.id
-        }
-      });
-      await db.Role.update(customerRole, {
-        where: {
-          id: customerRole.id
-        }
-      });
+    // let customerRole = {id:1,users:"1111",shops:"1211",contacts:"1111",roles:"0100"}
+    // let shopOwner = {id:2,users:"1111",shops:"1211",contacts:"1111",roles:"0100"}
+    // let updateRoleAdmin = {id:3,users:"0222",shops:"0222",contacts:"0222",roles:"2222"}
+
+      // await db.Role.update(updateRoleAdmin, {
+      //   where: {
+      //     id: updateRoleAdmin.id
+      //   }
+      // });
+      // await db.Role.update(shopOwner, {
+      //   where: {
+      //     id: shopOwner.id
+      //   }
+      // });
+      // await db.Role.update(customerRole, {
+      //   where: {
+      //     id: customerRole.id
+      //   }
+      // });
     }catch(e){
       console.log("e =",e)
     }

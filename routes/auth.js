@@ -7,6 +7,8 @@ const userService = require('../services/user');
 const shopService = require('../services/shop');
 const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
 // routes
+
+router.get('/refreshToken',refreshTK)
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
 router.post('/register/shop', [authorize(),CheckAuthorizeWithTable("shops",1,1),registerShopSchema], registerShop);//FE ->register as User -> login ->register as shop
@@ -28,10 +30,33 @@ function authenticateSchema(req, res, next) {
 }
 
 function authenticate(req, res, next) {
+    let options = {
+        maxAge: 1000 * 60 * 60*24 , // would expire after 1day
+        httpOnly: true,
+        signed: true
+    }
     userService.authenticate(req.body)
-        .then(user => res.json(user))
+        .then(user => {
+            let {refreshtoken,...userobj} = user
+            res.cookie('refreshToken', refreshtoken, options)
+            res.json(userobj)
+        })
         .catch(next);
 }
+
+function refreshTK(req,res,next){
+    //Get the refresh token from cookie
+    userService.refreshJWT(req.signedCookies.refreshToken)
+    .then(user => {
+        let {refreshtoken,...userobj} = user
+        res.cookie('refreshToken', refreshtoken, options)
+        res.json(userobj)
+    })
+    .catch(next);
+
+}
+
+
 
 function registerSchema(req, res, next) {
     const schema = Joi.object({

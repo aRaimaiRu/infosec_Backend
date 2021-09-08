@@ -11,7 +11,8 @@ module.exports = {
     create,
     update,
     delete: _delete,
-    ChangeRole
+    ChangeRole,
+    refreshJWT
 };
 const secret = process.env.SECRET
 async function authenticate({ username, password }) {
@@ -19,14 +20,25 @@ async function authenticate({ username, password }) {
     // if (user.password !== password){
     //     throw 'Username or password is incorrect';
     // }
-
     if (!user || !(bcrypt.compareSync(password, user.password)))
         throw 'Username or password is incorrect';
 
     // authentication successful
     const token = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '10m' });
-    return { ...omitHash(user.get()),Role:user.Role.get().roleName, token };
+    const refreshtoken = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '1h' });
+    return { ...omitHash(user.get()),Role:user.Role.get().roleName, token,refreshtoken };
 }
+
+async function refreshJWT(rftoken){
+    let decoded = jwt.verify(rftoken, secret);
+    const user = await db.User.scope('withHash').findOne({ where: { username:decoded.username },include:[db.Role] });
+    if(!user)
+        throw "No Username"
+    const token = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '10m' });
+    const refreshtoken = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '1h' });
+    return { ...omitHash(user.get()),Role:user.Role.get().roleName, token,refreshtoken };
+}
+
 
 async function getAll() {
     return await db.User.findAll();

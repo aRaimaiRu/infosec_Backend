@@ -7,8 +7,8 @@ const userService = require('../services/user');
 const shopService = require('../services/shop');
 const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
 // routes
-
 router.get('/refreshToken',refreshTK)
+router.post('/logout', logout);
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
 router.post('/register/shop', [authorize(),CheckAuthorizeWithTable("shops",1,1),registerShopSchema], registerShop);//FE ->register as User -> login ->register as shop
@@ -20,6 +20,13 @@ router.delete('/:id', authorize(), _delete);
 
 module.exports = router;
 
+const options = {
+    maxAge: 1000 * 60 * 60*24 , // would expire after 1day
+    httpOnly: true,
+    signed: true
+}
+
+
 function authenticateSchema(req, res, next) {
     const schema = Joi.object({
         username: Joi.string().required(),
@@ -30,11 +37,6 @@ function authenticateSchema(req, res, next) {
 }
 
 function authenticate(req, res, next) {
-    let options = {
-        maxAge: 1000 * 60 * 60*24 , // would expire after 1day
-        httpOnly: true,
-        signed: true
-    }
     userService.authenticate(req.body)
         .then(user => {
             let {refreshtoken,...userobj} = user
@@ -45,10 +47,15 @@ function authenticate(req, res, next) {
 }
 
 function refreshTK(req,res,next){
+
     //Get the refresh token from cookie
+    if(!req.signedCookies.refreshToken)
+    return res.status(401).json({message:"need refresh Token"})
     userService.refreshJWT(req.signedCookies.refreshToken)
     .then(user => {
+
         let {refreshtoken,...userobj} = user
+
         res.cookie('refreshToken', refreshtoken, options)
         res.json(userobj)
     })
@@ -135,4 +142,19 @@ function _delete(req, res, next) {
     userService.delete(req.params.id)
         .then(() => res.json({ message: 'User deleted successfully' }))
         .catch(next);
+}
+
+function logout(req,res,next){
+    try{
+        console.log("LOGOUTTTTTTTTTT")
+        res.clearCookie('refreshToken');
+        res.json({message:"logout success"})
+
+    }catch(e){
+        next(e)
+    }
+
+
+
+
 }

@@ -30,13 +30,19 @@ async function authenticate({ username, password }) {
 }
 
 async function refreshJWT(rftoken){
+    try{
     let decoded = jwt.verify(rftoken, secret);
     const user = await db.User.scope('withHash').findOne({ where: { username:decoded.username },include:[db.Role] });
-    if(!user)
-        throw "No Username"
+    if(!user)throw "UnauthorizedError"
     const token = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '10m' });
     const refreshtoken = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '1h' });
+    // console.log("Refresh JWT = ",user.get())
     return { ...omitHash(user.get()),Role:user.Role.get().roleName, token,refreshtoken };
+    }catch(e){
+        console.log("error",e)
+        throw e
+    }
+    
 }
 
 

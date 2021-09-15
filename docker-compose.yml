@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+  app1:
+    image: kooldev/node:14
+    command: ["node", "."]
+    ports:
+      - "${KOOL_APP_PORT:-3002}:3002"
+    environment:
+      ASUSER: "${KOOL_ASUSER:-0}"
+      UID: "${UID:-0}"
+    volumes:
+      - .:/app:delegated
+    networks:
+      - kool_local
+      - kool_global
+    depends_on:
+      - mysql
+  mysql:
+    image: mariadb:10.6.3-focal
+    ports:
+      - 127.0.0.1:3306:3306
+    expose: 
+      - 3306
+    environment:
+      - MARIADB_ROOT_PASSWORD=mysecret
+    networks:
+      - kool_local
+      - kool_global
+
+networks:
+  kool_local:
+  kool_global:
+    external: true
+    name: "${KOOL_GLOBAL_NETWORK:-kool_global}"
+
+
+

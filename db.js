@@ -10,6 +10,9 @@ const user = process.env.USER;
 const password = process.env.PASSWORD;
 const database = process.env.DB;
 
+console.log(host,user,password,database)
+
+
 const pool = mysql.createPool({
   host,
   user ,
@@ -39,9 +42,10 @@ initialize();
 
 async function initialize() {
     // create db if it doesn't already exist
+    try{
     const connection = await startcon();
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.database}\`;`);
-
+    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database||process.env.database}\`;`);
+    console.log("success connect ?")
     // connect to db
     const sequelize = new Sequelize(database, user, password, { dialect: 'mariadb' });
 
@@ -57,7 +61,6 @@ async function initialize() {
     db.Shops.belongsToMany(db.User,{through:db.Contact});
     //user own only one shop
     db.User.hasOne(db.Shops,{foreignKey:"ownerId"});
-    try{
     // sync all models with database
     await sequelize.sync({alter:true});
     //create Role
@@ -86,9 +89,7 @@ async function initialize() {
       //     id: customerRole.id
       //   }
       // });
-    }catch(e){
-      console.log("e =",e)
-    }
+
     
 
     //create Admin
@@ -106,6 +107,9 @@ async function initialize() {
     });
 
     }
+  }catch(e){
+    console.log("e =",e)
+  }
 
 
     // let testQU = await db.User.findAll({include:[{model:db.Role}]});

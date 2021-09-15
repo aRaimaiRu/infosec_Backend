@@ -1,0 +1,5 @@
+scripts:
+  node: kool exec app1 node
+  npm: kool exec app1 npm
+  npx: kool exec app1 npx
+  setup: kool start

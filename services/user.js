@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const db = require('../db');
 const _ = require('lodash')
 
-
 module.exports = {
     authenticate,
     getAll,
@@ -12,7 +11,8 @@ module.exports = {
     update,
     delete: _delete,
     ChangeRole,
-    refreshJWT
+    refreshJWT,
+    activate
 };
 const secret = process.env.SECRET
 async function authenticate({ username, password }) {
@@ -65,6 +65,7 @@ async function create(params) {
     }
     // save user
     await db.User.create(params);
+    return await db.User.findOne({ where: { username: params.username } });
 }
 
 async function update(id, params) {
@@ -110,4 +111,15 @@ async function ChangeRole({userId,roleId}) {
     user.RoleId = roleId;
     user.save();
     return "sucessful change user Role"
+}
+
+async function activate({id}){
+    console.log("activate id:",id)
+    const user = await db.User.findByPk(id)
+    if(!user)throw "no User"
+    if(omitHash(user.get()).isVerify == true) throw "already have this user"
+    user.isVerify = true;
+    user.save();
+    return "activate user Successful"
+
 }

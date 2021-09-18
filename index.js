@@ -27,5 +27,5 @@ app.get("/",async(req,res)=>{
 })
 app.use(errorHelpers);
 
-const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 3002;
+const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));

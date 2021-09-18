@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
+const nodemailer = require('nodemailer');
+const transport = require("../mailtranport")
 const validateRequest = require('../middlewares/validate-request');
 const authorize = require('../middlewares/auth')
 const userService = require('../services/user');
@@ -8,6 +10,7 @@ const shopService = require('../services/shop');
 const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
 // routes
 router.get('/refreshToken',refreshTK)
+router.get('/activate/:id',activate)
 router.post('/logout', logout);
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
@@ -24,6 +27,13 @@ const options = {
     maxAge: 1000 * 60 * 60*24 , // would expire after 1day
     httpOnly: true,
     signed: true
+}
+
+
+function activate(req,res,next){
+    userService.activate({id:req.params.id})
+    .then(message => res.status(200).send(message))
+    .catch(e=>next(e))
 }
 
 
@@ -85,7 +95,18 @@ function registerShopSchema(req, res, next) {
 
 function register(req, res, next) {
     userService.create({...req.body,RoleId:1})
-        .then(() => res.json({ message: 'Registration Shop successful' }))
+        .then(async (user)=>{
+            let info = await transport.sendMail({
+                from: process.env.SENDEREMAIL, // อีเมลผู้ส่ง
+                to: req.body.username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+                subject: 'Verification', // หัวข้ออีเมล
+                text: 'Please click button to Verify Email', // plain text body
+                html: `<form method="get" action="${process.env.CURRENTURL+"/api/user/activate/"+user.id}"> <button type="submit">Verify</button> </form>` // html body
+                });
+                console.log("send verify Email complete")
+                return info
+        })
+        .then((user) => res.json({ message: 'Registration  successful' }))
         .catch(next);
 }
 

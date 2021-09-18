@@ -6,31 +6,33 @@ const { Sequelize } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const sha256 = require('sha256');
 const host = process.env.HOST;
-const user = process.env.USER;
+const username = process.env.USER;
 const password = process.env.PASSWORD;
 const database = process.env.DB;
+const port = process.env.DBPORT
 
-console.log(host,user,password,database)
+console.log(host,username,password,database)
 
 
-const pool = mysql.createPool({
-  host,
-  user ,
-  password,
-  database
-});
+// const pool = mysql.createPool({
+//   host,
+//   port,
+//   username ,
+//   password,
+//   database
+// });
 
 module.exports = db = {};
 
-function startcon(){
-  return new Promise(function(resolve,reject){
-    pool.getConnection().then(function(connection){
-      resolve(connection);
-    }).catch(function(error){
-      reject(error);
-    });
-  });
-}
+// function startcon(){
+//   return new Promise(function(resolve,reject){
+//     pool.getConnection().then(function(connection){
+//       resolve(connection);
+//     }).catch(function(error){
+//       reject(error);
+//     });
+//   });
+// }
 
 
 
@@ -43,11 +45,11 @@ initialize();
 async function initialize() {
     // create db if it doesn't already exist
     try{
-    const connection = await startcon();
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database||process.env.database}\`;`);
+    // const connection = await startcon();
+    // await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database||process.env.database}\`;`);
     console.log("success connect ?")
     // connect to db
-    const sequelize = new Sequelize(database, user, password, { dialect: 'mariadb' });
+    const sequelize =await new Sequelize(database, username, password, { host:'localhost',dialect: 'mariadb' });//host = database service name dev locahost or prod mysql
 
     // init models and add them to the exported db object
     db.User = require('./models/Users')(sequelize);//return sequelize.models.User
@@ -96,15 +98,22 @@ async function initialize() {
     let admin = await db.User.findOne({where:{username:process.env.ADMINUSERNAME}})
     
     if(!admin){
-      bcrypt.hash(process.env.ADMINPASSWORD, 10, function(err, hash) {
-        db.User.create({
+      bcrypt.hash(process.env.ADMINPASSWORD, 10, async function(err, hash) {
+        try{
+        await db.User.create({
           firstName: process.env.ADMINFIRSTNAME,
           lastName: process.env.ADMINLASTNAME,
           username: process.env.ADMINUSERNAME,
           password: hash,
-          RoleId: process.env.ADMINROLEID
+          RoleId: process.env.ADMINROLEID,
+  
         })
+      }catch(e){
+        console.log("e =",e)
+      }
     });
+    
+    
 
     }
   }catch(e){

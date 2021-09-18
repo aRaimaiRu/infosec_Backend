@@ -1,0 +1,13 @@
+    depends_on:
+      - mysql
+  mysql:
+    image: mariadb:10.6.3-focal
+    ports:
+      - 127.0.0.1:3306:3306
+    expose: 
+      - 3306
+    environment:
+      - MARIADB_ROOT_PASSWORD=mysecret
+    networks:
+      - kool_local
+      - kool_global

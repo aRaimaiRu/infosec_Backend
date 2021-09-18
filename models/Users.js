@@ -8,6 +8,7 @@ function model(sequelize) {
         lastName: { type: DataTypes.STRING, allowNull: false },
         username: { type: DataTypes.STRING, allowNull: false },
         password: { type: DataTypes.STRING, allowNull: false },
+        isVerify: { type: DataTypes.BOOLEAN,allowNull:false,defaultValue:false}
     };
 
     const options = {

@@ -2,17 +2,20 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcryptjs');
 const transport = require("../mailtranport")
 const validateRequest = require('../middlewares/validate-request');
 const authorize = require('../middlewares/auth')
 const userService = require('../services/user');
 const shopService = require('../services/shop');
 const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
+
 // routes
 
 router.get('/refreshToken',refreshTK)
 router.get('/activate/:id',activate)
 router.post('/sendforgetpasswordemail',usernameschema,sendforgetpasswordemail)
+router.put('/repassword',[authorize(),passwordschema],resetpassword)
 router.post('/logout', logout);
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
@@ -166,14 +169,14 @@ function updateSchema(req, res, next) {
 }
 
 function update(req, res, next) {
-    if(req.params.id != req.user.sub) return res.json({message:'Unauthorized Failed to Update'})
+    if(req.params.id != req.user.id) return res.json({message:'Unauthorized Failed to Update'})
     userService.update(req.params.id, req.body)
         .then(user => res.json(user))
         .catch(next);
 }
 
 function _delete(req, res, next) {
-    if(req.params.id != req.user.sub) return res.json({message:'Unauthorized Failed to Delete'})
+    if(req.params.id != req.user.id) return res.json({message:'Unauthorized Failed to Delete'})
     userService.delete(req.params.id)
         .then(() => res.json({ message: 'User deleted successfully' }))
         .catch(next);
@@ -231,5 +234,12 @@ async function sendforgetpasswordemail(req,res,next){
     }
     //create token and send token
 
+
+}
+async function resetpassword(req,res,next){
+    password = await bcrypt.hashSync(req.body.password, 10);
+    userService.update(req.user.id, {password})
+    .then(user => res.json(user))
+    .catch(next);
 
 }

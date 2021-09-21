@@ -73,7 +73,7 @@ async function create(params) {
 
 async function update(id, params) {
     const user = await getUser(id);
-
+    console.log("id =",id)
     // validate
     const usernameChanged = params.username && user.username !== params.username;
     if (usernameChanged && await db.User.findOne({ where: { username: params.username } })) {
@@ -100,6 +100,7 @@ async function _delete(id) {
 // helper functions
 
 async function getUser(id) {
+    console.log("id === ",id)
     const user = await db.User.findByPk(id);
     if (!user) throw 'User not found';
     return user;

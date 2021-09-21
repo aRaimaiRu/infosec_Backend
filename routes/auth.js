@@ -12,7 +12,7 @@ const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
 
 router.get('/refreshToken',refreshTK)
 router.get('/activate/:id',activate)
-router.post('/sendforgetpasswordemail',usernameschema)
+router.post('/sendforgetpasswordemail',usernameschema,sendforgetpasswordemail)
 router.post('/logout', logout);
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
@@ -189,8 +189,46 @@ function logout(req,res,next){
     }
 
 }
-function sendforgetpasswordemail(req,res,next){
+
+
+function resendVerificationmail(req, res, next) {
+    userService.reSendVerifyEmail({username:req.body.username})
+        .then(async (user)=>{
+            let info = await transport.sendMail({
+                from: process.env.SENDEREMAIL, // อีเมลผู้ส่ง
+                to: req.body.username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+                subject: 'Verification', // หัวข้ออีเมล
+                text: 'Please click button to Verify Email', // plain text body
+                html: `<p>Please click button to Verify Email<form method="get" action="${process.env.CURRENTURL+"/api/user/activate/"+user.id}"> <button type="submit">Verify</button> </form></p>` // html body
+                });
+                console.log("send verify Email complete")
+                return info
+        })
+        .then((user) => res.json({message:"Resend Verification Email Successfully"}))
+        .catch(next);
+}
+
+
+
+
+
+async function sendforgetpasswordemail(req,res,next){
+    try{
     //check for username (email)
+    const token = await userService.forgotpassword({username:req.body.username})
+    let info = await transport.sendMail({
+    from: process.env.SENDEREMAIL, // อีเมลผู้ส่ง
+    to: req.body.username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
+    subject: 'Reset Password', // หัวข้ออีเมล
+    text: 'Please click button to Reset Password ', // plain text body
+    html: `<p>Please click button to Reset Password</p>
+    ${process.env.CORSURL+"/Repassword?token="+token}"` // html body
+    });
+    console.log("send Reset Password mail complete")
+    return res.json({message:"Send Reset Password Mail Successful"})
+    }catch(e){
+        next(e)
+    }
     //create token and send token
 
 

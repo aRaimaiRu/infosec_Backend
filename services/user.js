@@ -12,7 +12,9 @@ module.exports = {
     delete: _delete,
     ChangeRole,
     refreshJWT,
-    activate
+    activate,
+    reSendVerifyEmail,
+    forgotpassword
 };
 const secret = process.env.SECRET
 async function authenticate({ username, password }) {
@@ -127,7 +129,18 @@ async function activate({id}){
 
 async function forgotpassword({username}){
     const user = await db.User.findOne({ where: { username } })
-    if(!user)throw "no User"
+    if(!user)throw "no User" 
+    const token = jwt.sign({id:user.id}, secret, { expiresIn: '1d' });
+    return token
 
 
+
+}
+    // const token = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '10m' });
+    // const refreshtoken = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '1h' });
+async function reSendVerifyEmail({username}) {
+    const user = await db.User.findOne({ where: { username } })
+    if(user.isVerify) throw "Already Verify Email"
+    return user
+    
 }

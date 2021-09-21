@@ -9,8 +9,10 @@ const userService = require('../services/user');
 const shopService = require('../services/shop');
 const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
 // routes
+
 router.get('/refreshToken',refreshTK)
 router.get('/activate/:id',activate)
+router.post('/sendforgetpasswordemail',usernameschema)
 router.post('/logout', logout);
 router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/register', registerSchema, register);
@@ -39,11 +41,23 @@ function activate(req,res,next){
 
 function authenticateSchema(req, res, next) {
     const schema = Joi.object({
-        username: Joi.string().required(),
+        username: Joi.string().email().required(),
         password: Joi.string().required()
     });
     validateRequest(req, next, schema);
 
+}
+function usernameschema(req, res, next) {
+    const schema = Joi.object({
+        username: Joi.string().email().required(),
+    });
+    validateRequest(req, next, schema);
+}
+function passwordschema(req, res, next) {
+    const schema = Joi.object({
+        password: Joi.string().required()
+    });
+    validateRequest(req, next, schema);
 }
 
 function authenticate(req, res, next) {
@@ -174,7 +188,10 @@ function logout(req,res,next){
         next(e)
     }
 
-
+}
+function sendforgetpasswordemail(req,res,next){
+    //check for username (email)
+    //create token and send token
 
 
 }

@@ -22,6 +22,7 @@ async function authenticate({ username, password }) {
     // }
     if (!user || !(bcrypt.compareSync(password, user.password)))
         throw 'Username or password is incorrect';
+    if(user.isVerify != true) throw "You need to Verify Email"
 
     // authentication successful
     const token = jwt.sign({ ...omitHash(user.get()),Role:user.Role.get().roleName }, secret, { expiresIn: '10m' });
@@ -121,5 +122,12 @@ async function activate({id}){
     user.isVerify = true;
     user.save();
     return "activate user Successful"
+
+}
+
+async function forgotpassword({username}){
+    const user = await db.User.findOne({ where: { username } })
+    if(!user)throw "no User"
+
 
 }

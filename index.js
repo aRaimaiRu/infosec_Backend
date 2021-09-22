@@ -9,10 +9,7 @@ const role = require('./routes/role');
 const errorHelpers = require('./middlewares/error-handler');
 
 const app = express();
-app.use(cors({
-    origin: process.env.CORSURL,
-    credentials: true
-    }));
+app.use(cors({credentials: true, origin: process.env.CORSURL}));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

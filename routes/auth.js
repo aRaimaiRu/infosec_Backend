@@ -202,7 +202,7 @@ function resendVerificationmail(req, res, next) {
                 to: req.body.username, // อีเมลผู้รับ สามารถกำหนดได้มากกว่า 1 อีเมล โดยขั้นด้วย ,(Comma)
                 subject: 'Verification', // หัวข้ออีเมล
                 text: 'Please click button to Verify Email', // plain text body
-                html: `<p>Please click button to Verify Email<form method="get" action="${process.env.CURRENTURL+"/api/user/activate/"+user.id}"> <button type="submit">Verify</button> </form></p>` // html body
+                html: `<p>Please click to Verify Email </p> ${process.env.CURRENTURL+"/api/user/activate/"+user.id}` // html body
                 });
                 console.log("send verify Email complete")
                 return info

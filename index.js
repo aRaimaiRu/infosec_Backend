@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const cors = require('cors');
 const pool = require('./db');
 const user = require('./routes/auth');
@@ -9,7 +10,8 @@ const role = require('./routes/role');
 const errorHelpers = require('./middlewares/error-handler');
 
 const app = express();
-app.use(cors({ credentials: true, origin: process.env.CORSURL }));
+app.use(helmet());
+app.use(cors({ credentials: true, origin: [process.env.CORSURL] }));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

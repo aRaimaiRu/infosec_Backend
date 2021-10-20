@@ -11,12 +11,7 @@ const errorHelpers = require('./middlewares/error-handler');
 
 const app = express();
 app.use(helmet());
-app.use(
-  cors({
-    credentials: true,
-    origin: [process.env.CORSURL, process.env.CORSURL2],
-  })
-);
+app.use(cors({ credentials: true, origin: [process.env.CORSURL] }));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

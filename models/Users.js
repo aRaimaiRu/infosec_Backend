@@ -8,8 +8,8 @@ function model(sequelize) {
     lastName: { type: DataTypes.STRING, allowNull: false },
     username: { type: DataTypes.STRING, allowNull: false },
     password: { type: DataTypes.STRING, allowNull: false },
-    address: { type: DataTypes.STRING, allowNull: false },
-    tel: { type: DataTypes.STRING, allowNull: false },
+    address: { type: DataTypes.STRING, allowNull: true },
+    tel: { type: DataTypes.STRING, allowNull: true },
     isVerify: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

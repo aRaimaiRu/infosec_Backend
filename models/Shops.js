@@ -9,7 +9,7 @@ function model(sequelize) {
     status: { type: DataTypes.STRING, allowNull: false },
     ownerId: { type: DataTypes.INTEGER, allowNull: false },
     shoptel: { type: DataTypes.STRING, allowNull: false },
-    qrcodeline: { type: DataTypes.STRING, allowNull: true },
+    qrcodelink: { type: DataTypes.STRING, allowNull: true },
     Logo: { type: DataTypes.STRING, allowNull: true },
     description: { type: DataTypes.STRING, allowNull: true },
   };

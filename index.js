@@ -8,8 +8,9 @@ const user = require('./routes/auth');
 const shop = require('./routes/shop');
 const role = require('./routes/role');
 const errorHelpers = require('./middlewares/error-handler');
-
+const multer = require('multer');
 const app = express();
+app.use(express.static('public'));
 app.use(helmet());
 app.use(cors({ credentials: true, origin: [process.env.CORSURL] }));
 

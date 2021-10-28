@@ -51,6 +51,12 @@ async function initialize() {
     db.User = require('./models/Users')(sequelize); //return sequelize.models.User
     db.Shops = require('./models/Shops')(sequelize);
     db.Role = require('./models/Roles')(sequelize);
+    db.Product = require('./models/Products')(sequelize);
+    db.SizeStock = require('./models/SizeStocks')(sequelize);
+    // Product and Shop relation
+    db.Product.hasOne(db.SizeStock, { foreignKey: 'productId' });
+    // Product and Shop relation
+    db.Product.hasOne(db.Shops, { foreignKey: 'shopId' });
     //User and Role relation
     db.Role.hasMany(db.User);
     db.User.belongsTo(db.Role);

@@ -1,13 +1,13 @@
-version: "3.7"
+version: '3.7'
 services:
   app1:
     image: kooldev/node:14
-    command: ["node", "."]
+    command: ['node', '.']
     ports:
-      - "${KOOL_APP_PORT:-3002}:3002"
+      - '${KOOL_APP_PORT:-3002}:3002'
     environment:
-      ASUSER: "${KOOL_ASUSER:-0}"
-      UID: "${UID:-0}"
+      ASUSER: '${KOOL_ASUSER:-0}'
+      UID: '${UID:-0}'
     volumes:
       - .:/app:delegated
     networks:
@@ -19,37 +19,34 @@ services:
     image: mariadb:10.6.3-focal
     ports:
       - 3306:3306
-    expose: 
+    expose:
       - 3306
     environment:
       - MARIADB_ROOT_PASSWORD=mysecret
     networks:
       - kool_local
       - kool_global
+    volumes:
+      - mycustom.cnf:/etc/mysql/conf.d/custom.cnf
   app:
     image: kooldev/node:14
-    command: ["npm", "start"]
+    command: ['npm', 'start']
     stdin_open: true
     ports:
-      - "${KOOL_APP_PORT:-3000}:3000"
+      - '${KOOL_APP_PORT:-3000}:3000'
     expose:
       - 3000
     environment:
-      ASUSER: "${KOOL_ASUSER:-0}"
-      UID: "${UID:-0}"
+      ASUSER: '${KOOL_ASUSER:-0}'
+      UID: '${UID:-0}'
     volumes:
       - ../../myReact/react_infosec:/app:delegated
     networks:
       - kool_local
       - kool_global
 
-
-
 networks:
   kool_local:
   kool_global:
     external: true
-    name: "${KOOL_GLOBAL_NETWORK:-kool_global}"
-
-
-
+    name: '${KOOL_GLOBAL_NETWORK:-kool_global}'

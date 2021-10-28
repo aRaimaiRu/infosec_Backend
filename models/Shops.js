@@ -4,14 +4,18 @@ module.exports = model;
 
 function model(sequelize) {
   const attributes = {
-    name: { type: DataTypes.STRING, allowNull: false },
-    address: { type: DataTypes.STRING, allowNull: false },
-    status: { type: DataTypes.STRING, allowNull: false },
+    shopName: { type: DataTypes.STRING, allowNull: false },
+    shopAddress: { type: DataTypes.STRING, allowNull: false },
     ownerId: { type: DataTypes.INTEGER, allowNull: false },
-    shoptel: { type: DataTypes.STRING, allowNull: false },
-    qrcodelink: { type: DataTypes.STRING, allowNull: true },
-    logo: { type: DataTypes.STRING, allowNull: true },
-    description: { type: DataTypes.STRING, allowNull: true },
+    shopTel: { type: DataTypes.STRING, allowNull: false },
+    promptPayImg: { type: DataTypes.STRING, allowNull: false },
+    logo: { type: DataTypes.STRING, allowNull: false },
+    IDcard: { type: DataTypes.STRING, allowNull: false },
+    IDcardImage: { type: DataTypes.STRING, allowNull: false },
+    shopstatus: { type: DataTypes.STRING, allowNull: false },
+    name: { type: DataTypes.STRING, allowNull: false },
+    lastname: { type: DataTypes.STRING, allowNull: false },
+    LinkIDLine: { type: DataTypes.STRING, allowNull: false },
   };
 
   return sequelize.define('Shop', attributes);

@@ -22,8 +22,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 const registerUpload = upload.fields([
-  { name: 'qrcodelink', maxCount: 1 },
+  { name: 'promptPayImg', maxCount: 1 },
   { name: 'logo', maxCount: 1 },
+  { name: 'IDcardImage', maxCount: 1 },
 ]);
 
 // routes
@@ -58,12 +59,17 @@ async function registerShop(req, res, next) {
     .create({
       ...req.body,
       ownerId: req.user.id,
-      logo: process.env.CURRENTURL + '/uploads' + req.files['logo'][0].filename,
-      qrcodelink:
+      logo:
+        process.env.CURRENTURL + '/uploads/' + req.files['logo'][0].filename,
+      promptPayImg:
         process.env.CURRENTURL +
-        '/uploads' +
-        req.files['qrcodelink'][0].filename,
-      status: 'pending',
+        '/uploads/' +
+        req.files['promptPayImg'][0].filename,
+      IDcardImage:
+        process.env.CURRENTURL +
+        '/uploads/' +
+        req.files['IDcardImage'][0].filename,
+      shopstatus: 'pending',
     })
     .then(() => {
       userService.ChangeRole({ userId: req.user.id, roleId: 2 });

@@ -5,6 +5,7 @@ const db = require('../db');
 module.exports = {
   create,
   getall,
+  getProduct,
 };
 const secret = process.env.SECRET;
 async function create(params) {
@@ -26,4 +27,16 @@ async function create(params) {
 
 async function getall() {
   return await db.Product.findAll();
+}
+
+async function getProduct(id) {
+  const product = await db.Product.findOne({ where: { id } });
+  if (!product) throw 'cannot find prodct';
+  console.log('get a product =', product);
+  let myproduct = product.toJSON();
+  const sizestocks = await db.SizeStock.findAll({
+    where: { productId: product.id },
+  });
+  return { ...myproduct, sizestocks };
+  // const sizestock = await db.SizeStock.findByPk
 }

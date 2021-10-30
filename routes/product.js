@@ -28,6 +28,7 @@ const registerUpload = upload.fields([{ name: 'previewurl', maxCount: 1 }]);
 router.post('/add', [authorize(), registerUpload], addProduct);
 router.get('/all', getAll);
 router.get('/:id', getProduct);
+router.get('/order/:id', [authorize()], getorderProduct);
 // router.post(
 //   '/approve',
 //   [authorize(), CheckAuthorizeWithTable('shops', 2, 2)],
@@ -68,6 +69,21 @@ async function getProduct(req, res, next) {
     const productdata = await productService.getProduct(req.params.id);
     const shopdata = await shopService.getShop(productdata.shopId);
     res.json({ ...productdata, ...shopdata });
+  } catch (e) {
+    next(e);
+  }
+}
+
+async function getorderProduct(req, res, next) {
+  try {
+    console.log('get a order product', req.params.id);
+    const productdata = await productService.getProduct(req.params.id);
+    const shopdata = await shopService.getShop(productdata.shopId);
+    res.json({
+      product: { ...productdata },
+      shop: { ...shopdata },
+      user: { ...req.user },
+    });
   } catch (e) {
     next(e);
   }

@@ -10,6 +10,7 @@ module.exports = {
   getShopisContact,
   changeShopStatus,
   getShopStatus,
+  update,
 };
 const secret = process.env.SECRET;
 async function create(params) {
@@ -69,4 +70,15 @@ async function changeShopStatus({ shopId, status }) {
 }
 async function getShopStatus(shopstatus) {
   return await db.Shops.findAll({ where: { shopstatus } });
+}
+
+async function update(id, params) {
+  console.log('id =', id);
+  let shop = await db.Shops.findByPk(id);
+
+  // copy params to user and save
+  Object.assign(shop, params);
+  await shop.save();
+
+  return shop.get();
 }

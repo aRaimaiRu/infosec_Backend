@@ -26,6 +26,7 @@ const registerUpload = upload.fields([
   { name: 'logo', maxCount: 1 },
   { name: 'IDcardImage', maxCount: 1 },
 ]);
+const uploadlogo = upload.fields([{ name: 'logo', maxCount: 1 }]);
 
 // routes
 router.post(
@@ -39,6 +40,7 @@ router.post('/contact/:shopid', authorize(), contactShop);
 router.get('/OwnShop', authorize(), getOwnShop);
 router.get('/:shopid', getShop);
 router.post('/Register', [authorize(), registerUpload], registerShop);
+router.put('/updateShop', [authorize(), uploadlogo], changelogo);
 
 function registerShopSchema(req, res, next) {
   const schema = Joi.object({
@@ -127,6 +129,17 @@ function getShopStatus(req, res, next) {
     .getShopStatus(req.params.shopstatus)
     .then((shoplist) => res.json(shoplist))
     .catch(next);
+}
+
+async function changelogo(req, res, next) {
+  if (req.files['logo'][0]) {
+    let shop = await shopService.getOwnShop(req.user.id);
+    await shopService.update(shop.id, {
+      logo:
+        process.env.CURRENTURL + '/uploads/' + req.files['logo'][0].filename,
+    });
+    res.json({ message: 'success change logo' });
+  }
 }
 
 module.exports = router;

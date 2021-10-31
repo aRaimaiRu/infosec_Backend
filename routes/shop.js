@@ -33,6 +33,7 @@ router.post(
   [authorize(), CheckAuthorizeWithTable('shops', 2, 2)],
   changeShopStatus
 );
+router.get('/getShopStatus/:shopstatus', [authorize()], getShopStatus);
 router.get('/contact/:shopid', authorize(), getShopisContact);
 router.post('/contact/:shopid', authorize(), contactShop);
 router.get('/OwnShop', authorize(), getOwnShop);
@@ -107,6 +108,7 @@ function getOwnShop(req, res, next) {
 }
 
 function changeShopStatus(req, res, next) {
+  console.log('change shop status body = ', req.body);
   if (
     req.body.status !== 'pending' &&
     req.body.status !== 'closed' &&
@@ -116,7 +118,14 @@ function changeShopStatus(req, res, next) {
   }
   shopService
     .changeShopStatus({ shopId: req.body.shopId, status: req.body.status })
-    .then((message) => res.json(message))
+    .then((message) => res.json({ message }))
+    .catch(next);
+}
+function getShopStatus(req, res, next) {
+  console.log('get pendingShop', req.params.shopstatus);
+  shopService
+    .getShopStatus(req.params.shopstatus)
+    .then((shoplist) => res.json(shoplist))
     .catch(next);
 }
 

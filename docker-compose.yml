@@ -26,8 +26,6 @@ services:
     networks:
       - kool_local
       - kool_global
-    volumes:
-      - mycustom.cnf:/etc/mysql/conf.d/custom.cnf
   app:
     image: kooldev/node:14
     command: ['npm', 'start']

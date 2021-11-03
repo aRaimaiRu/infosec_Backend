@@ -15,6 +15,7 @@ services:
       - kool_global
     depends_on:
       - mysql
+    restart: always
   mysql:
     image: mariadb:10.6.3-focal
     ports:
@@ -27,7 +28,7 @@ services:
       - kool_local
       - kool_global
     volumes:
-      - mycustom.cnf:/etc/mysql/conf.d/custom.cnf
+      - ./data:/var/lib/mysql
   app:
     image: kooldev/node:14
     command: ['npm', 'start']

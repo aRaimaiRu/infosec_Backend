@@ -9,6 +9,8 @@ const CheckAuthorizeWithTable = require('../middlewares/checkRolePermission');
 const util = require('util');
 
 const multer = require('multer');
+const { decodeBase64 } = require('bcryptjs');
+const { x } = require('joi');
 // const upload = multer({ dest: 'public/uploads/' });
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -34,6 +36,7 @@ router.post(
   [authorize(), CheckAuthorizeWithTable('shops', 2, 2)],
   changeShopStatus
 );
+router.get('/getReportShop', getReportShop);
 router.get('/getShopStatus/:shopstatus', [authorize()], getShopStatus);
 router.get('/contact/:shopid', authorize(), getShopisContact);
 router.post('/contact/:shopid', authorize(), contactShop);
@@ -82,11 +85,29 @@ async function registerShop(req, res, next) {
     .catch(next);
 }
 
-function getShop(req, res, next) {
-  shopService
-    .getShop(req.params.shopid)
-    .then((shop) => res.json({ ...shop }))
-    .catch(next);
+async function getShop(req, res, next) {
+  try {
+    let shop = await shopService.getShop(req.params.shopid);
+    let g = {
+      ...shop,
+      like: shop.Users.filter((d) => d.contact.like == 1).length,
+      dislike: shop.Users.filter((d) => d.contact.like == -1).length,
+      likeratio:
+        shop.Users.filter((d) => d.contact.like == 1).length -
+          shop.Users.filter((d) => d.contact.like == -1).length >
+        0
+          ? true
+          : 1 -
+              shop.Users.filter((d) => d.contact.like == 1).length /
+                shop.Users.filter((d) => d.contact.like == -1).length >=
+            0.8
+          ? false
+          : true,
+    };
+    res.json({ ...g });
+  } catch (e) {
+    next(e);
+  }
 }
 function getShopisContact(req, res, next) {
   shopService
@@ -96,8 +117,13 @@ function getShopisContact(req, res, next) {
 }
 
 function contactShop(req, res, next) {
+  console.log('contact Shop');
   shopService
-    .contactShop({ ShopId: parseInt(req.params.shopid), UserId: req.user.id })
+    .contactShop({
+      ShopId: parseInt(req.params.shopid),
+      UserId: req.user.id,
+      like: req.body.like,
+    })
     .then((message) => res.json(message))
     .catch(next);
 }
@@ -139,6 +165,36 @@ async function changelogo(req, res, next) {
         process.env.CURRENTURL + '/uploads/' + req.files['logo'][0].filename,
     });
     res.json({ message: 'success change logo' });
+  }
+}
+
+async function getReportShop(req, res, next) {
+  //get all shop and like
+  try {
+    console.log('getReportShopdsadasdas');
+    // let allShop = await shopService.getReportShop();
+    // console.log(allShop.map((c) => c.Users.filter((d) => d.contact.like == 1)));
+    let a = await shopService.getReportShop();
+    let g = a.map((x) => ({
+      ...x.get(),
+      like: x.Users.filter((d) => d.contact.like == 1).length,
+      dislike: x.Users.filter((d) => d.contact.like == -1).length,
+      likeratio:
+        x.Users.filter((d) => d.contact.like == 1).length -
+          x.Users.filter((d) => d.contact.like == -1).length >
+        0
+          ? true
+          : 1 -
+              x.Users.filter((d) => d.contact.like == 1).length /
+                x.Users.filter((d) => d.contact.like == -1).length >=
+            0.8
+          ? false
+          : true,
+    }));
+
+    res.send(g);
+  } catch (e) {
+    next(e);
   }
 }
 

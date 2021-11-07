@@ -5,6 +5,8 @@ const mysql = require('mariadb');
 const { Sequelize } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const sha256 = require('sha256');
+const { DataTypes } = require('sequelize');
+
 const host = process.env.HOST;
 const username = process.env.USER;
 const password = process.env.PASSWORD;
@@ -61,7 +63,9 @@ async function initialize() {
     db.Role.hasMany(db.User);
     db.User.belongsTo(db.Role);
     //customers and shop contact
-    db.Contact = sequelize.define('contact');
+    db.Contact = sequelize.define('contact', {
+      like: { type: DataTypes.INTEGER },
+    });
     db.Shops.belongsToMany(db.User, { through: db.Contact });
     //user own only one shop
     db.User.hasOne(db.Shops, { foreignKey: 'ownerId' });

@@ -11,6 +11,7 @@ module.exports = {
   changeShopStatus,
   getShopStatus,
   update,
+  getReportShop,
 };
 const secret = process.env.SECRET;
 async function create(params) {
@@ -24,19 +25,23 @@ async function create(params) {
   return 'successful create a shop';
 }
 
-async function contactShop({ ShopId, UserId }) {
+async function contactShop({ ShopId, UserId, like }) {
   // validate
-
-  if (await db.Contact.findOne({ where: { ShopId, UserId } })) {
-    throw 'User ID "' + UserId + '" is already create a shop ShopId';
+  let userlikeshop = await db.Contact.findOne({ where: { ShopId, UserId } });
+  if (userlikeshop) {
+    userlikeshop.like = like;
+    await userlikeshop.save();
+    // throw 'User ID "' + UserId + '" is already create a shop ShopId';
+  } else {
+    await db.Contact.create({ ShopId, UserId, like });
   }
 
-  await db.Contact.create({ ShopId, UserId });
   return 'successful contact shop';
 }
 
-async function getShop(shopId) {
-  let shop = await db.Shops.findByPk(shopId);
+async function getShop(id) {
+  let shop = await db.Shops.findOne({ where: { id }, include: [db.User] });
+  if (!shop) throw 'cant find shop';
   return shop.toJSON();
 }
 
@@ -81,4 +86,9 @@ async function update(id, params) {
   await shop.save();
 
   return shop.get();
+}
+
+async function getReportShop() {
+  let shops = await db.Shops.findAll({ include: [db.User] });
+  return [...shops];
 }

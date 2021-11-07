@@ -89,6 +89,9 @@ async function update(id, params) {
 }
 
 async function getReportShop() {
-  let shops = await db.Shops.findAll({ include: [db.User] });
+  let shops = await db.Shops.findAll({
+    where: { shopstatus: 'opened' },
+    include: [db.User],
+  });
   return [...shops];
 }

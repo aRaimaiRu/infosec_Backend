@@ -29,7 +29,7 @@ router.post('/add', [authorize(), registerUpload], addProduct);
 router.get('/all', getAll);
 router.get('/:id', getProduct);
 router.get('/order/:id', [authorize()], getorderProduct);
-router.get('/search/inallproduct', searchProduct);
+router.post('/search/inallproduct', searchProduct);
 // router.post(
 //   '/approve',
 //   [authorize(), CheckAuthorizeWithTable('shops', 2, 2)],

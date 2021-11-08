@@ -29,6 +29,7 @@ router.post('/add', [authorize(), registerUpload], addProduct);
 router.get('/all', getAll);
 router.get('/:id', getProduct);
 router.get('/order/:id', [authorize()], getorderProduct);
+router.get('/search/inallproduct', searchProduct);
 // router.post(
 //   '/approve',
 //   [authorize(), CheckAuthorizeWithTable('shops', 2, 2)],
@@ -84,6 +85,16 @@ async function getorderProduct(req, res, next) {
       shop: { ...shopdata },
       user: { ...req.user },
     });
+  } catch (e) {
+    next(e);
+  }
+}
+
+async function searchProduct(req, res, next) {
+  try {
+    console.log('find product');
+    let result = await productService.searchProduct(req.body);
+    res.send(result);
   } catch (e) {
     next(e);
   }

@@ -6,6 +6,7 @@ module.exports = {
   create,
   getall,
   getProduct,
+  searchProduct,
 };
 const secret = process.env.SECRET;
 async function create(params) {
@@ -38,5 +39,18 @@ async function getProduct(id) {
     where: { productId: product.id },
   });
   return { ...myproduct, sizestocks };
+  // const sizestock = await db.SizeStock.findByPk
+}
+
+async function searchProduct(attr) {
+  const product = await db.Product.findAll({
+    where: { ...attr },
+  });
+  if (!product) throw 'cannot find prodct';
+  console.log('get a product =', product);
+  // const sizestocks = await db.SizeStock.findAll({
+  //   where: { productId: product.id },
+  // });
+  return [...product];
   // const sizestock = await db.SizeStock.findByPk
 }

@@ -191,8 +191,8 @@ async function getReportShop(req, res, next) {
           ? false
           : true,
     }));
-
-    res.send(g);
+    let fillter = g.filter((f) => f.likeratio == false);
+    res.send(fillter);
   } catch (e) {
     next(e);
   }

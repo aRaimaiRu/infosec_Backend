@@ -58,7 +58,8 @@ async function initialize() {
     // Product and Shop relation
     db.Product.hasOne(db.SizeStock, { foreignKey: 'productId' });
     // Product and Shop relation
-    db.Product.hasOne(db.Shops, { foreignKey: 'shopId' });
+    db.Product.belongsTo(db.Shops, { foreignKey: 'shopId' });
+    db.Shops.hasMany(db.Product, { foreignKey: 'shopId' });
     //User and Role relation
     db.Role.hasMany(db.User);
     db.User.belongsTo(db.Role);

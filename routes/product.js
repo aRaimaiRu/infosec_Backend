@@ -27,6 +27,7 @@ const registerUpload = upload.fields([{ name: 'previewurl', maxCount: 1 }]);
 // routes
 router.post('/add', [authorize(), registerUpload], addProduct);
 router.get('/all', getAll);
+router.get('/get/getlastestProduct', getlastestProduct);
 router.get('/:id', getProduct);
 router.get('/order/:id', [authorize()], getorderProduct);
 router.post('/search/inallproduct', searchProduct);
@@ -99,5 +100,12 @@ async function searchProduct(req, res, next) {
     next(e);
   }
 }
-
+async function getlastestProduct(req, res, next) {
+  try {
+    const data = await productService.getlastestProduct();
+    res.send(data);
+  } catch (e) {
+    next(e);
+  }
+}
 module.exports = router;

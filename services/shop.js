@@ -71,7 +71,7 @@ async function changeShopStatus({ shopId, status }) {
   shop.shopstatus = status;
 
   await shop.save();
-  return `successful change status ${shop.name} to ${status} `;
+  return `successful change status ${shop.shopName} to ${status} `;
 }
 async function getShopStatus(shopstatus) {
   return await db.Shops.findAll({ where: { shopstatus } });

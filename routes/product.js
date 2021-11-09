@@ -44,10 +44,10 @@ router.post('/search/inallproduct', searchProduct);
 
 async function addProduct(req, res, next) {
   try {
-    console.log('add Product');
-    console.log(req.user);
-    console.log(req.body);
-    console.log(req.files['previewurl'][0]);
+    // console.log('add Product');
+    // console.log(req.user);
+    // console.log(req.body);
+    // console.log(req.files['previewurl'][0]);
     productService.create({
       ...req.body,
       previewurl:
@@ -57,6 +57,7 @@ async function addProduct(req, res, next) {
       allsize: JSON.parse(req.body.allsize),
       ownerId: req.user.id,
     });
+    res.json({ message: 'add Product successful' });
   } catch (e) {
     next(e);
   }

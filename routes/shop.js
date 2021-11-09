@@ -128,11 +128,29 @@ function contactShop(req, res, next) {
     .catch(next);
 }
 
-function getOwnShop(req, res, next) {
-  shopService
-    .getOwnShop(req.user.id)
-    .then((message) => res.json(message))
-    .catch(next);
+async function getOwnShop(req, res, next) {
+  try {
+    let result = await shopService.getOwnShop(req.user.id);
+    let g = {
+      ...result,
+      like: result.contact.filter((d) => d.like == 1).length,
+      dislike: result.contact.filter((d) => d.like == -1).length,
+      likeratio:
+        result.contact.filter((d) => d.like == 1).length -
+          result.contact.filter((d) => d.like == -1).length >
+        0
+          ? true
+          : 1 -
+              result.contact.filter((d) => d.like == 1).length /
+                result.contact.filter((d) => d.like == -1).length >=
+            0.8
+          ? false
+          : true,
+    };
+    res.json({ ...g });
+  } catch (e) {
+    next(e);
+  }
 }
 
 function changeShopStatus(req, res, next) {

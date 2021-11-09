@@ -45,7 +45,7 @@ async function initialize() {
     console.log('success connect ?');
     // connect to db
     const sequelize = await new Sequelize(database, username, password, {
-      host: 'localhost',
+      host: process.env.DBHOST,
       dialect: 'mariadb',
     }); //host = database service name dev locahost or prod mysql
 

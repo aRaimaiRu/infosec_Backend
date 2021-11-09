@@ -13,7 +13,12 @@ const multer = require('multer');
 const app = express();
 app.use(express.static('public'));
 app.use(helmet());
-app.use(cors({ credentials: true, origin: [process.env.CORSURL] }));
+app.use(
+  cors({
+    credentials: true,
+    origin: [process.env.CORSURL, process.env.CORSURL2],
+  })
+);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

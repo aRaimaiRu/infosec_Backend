@@ -101,6 +101,8 @@ function registerSchema(req, res, next) {
     lastName: Joi.string().required(),
     username: Joi.string().required(),
     password: Joi.string().min(6).required(),
+    address: Joi.string(),
+    tel: Joi.string(),
   });
   validateRequest(req, next, schema);
 }
@@ -113,6 +115,7 @@ function registerShopSchema(req, res, next) {
 }
 
 function register(req, res, next) {
+  console.log('register', req.body);
   userService
     .create({ ...req.body, RoleId: 1 })
     .then(async (user) => {

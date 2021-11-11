@@ -34,14 +34,14 @@ services:
     command: ['npm', 'start']
     stdin_open: true
     ports:
-      - '${KOOL_APP_PORT:-3000}:3000'
+      - '${KOOL_APP_PORT:-5000}:3000'
     expose:
       - 3000
     environment:
       ASUSER: '${KOOL_ASUSER:-0}'
       UID: '${UID:-0}'
     volumes:
-      - ../../myReact/react_infosec:/app:delegated
+      - ../infosec_login/:/app:delegated
     networks:
       - kool_local
       - kool_global

@@ -46,7 +46,13 @@ async function getProduct(id) {
 async function searchProduct(attr) {
   const product = await db.Product.findAll({
     where: { ...attr },
-    include: [{ model: db.Shops, require: false }],
+    include: [
+      {
+        model: db.Shops,
+        require: false,
+        where: { shopstatus: 'opened' },
+      },
+    ],
   });
   if (!product) throw 'cannot find prodct';
   console.log('get a product =', product);
@@ -61,6 +67,13 @@ async function getlastestProduct(id) {
   const product = await db.Product.findAll({
     limit: 10,
     order: [['updatedAt', 'DESC']],
+    include: [
+      {
+        model: db.Shops,
+        require: false,
+        where: { shopstatus: 'opened' },
+      },
+    ],
   });
   if (!product) throw 'cannot find prodct';
   console.log('get a product =', product);
